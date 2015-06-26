@@ -34,3 +34,21 @@ int TermScore::split(const std::string &txt, std::vector<std::string> &strs, cha
 	strs.push_back(txt.substr(initialPos, std::min(pos, txt.size()) - initialPos + 1));
 	return strs.size();
 }
+
+void TermScore::traverse(string direName)
+{
+	_finddata_t fileDir;
+	char* dir = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\*.*";
+	long lfDir;
+
+	if ((lfDir = _findfirst(dir, &fileDir)) == -1l)
+		printf("No file is found\n");
+	else{
+		printf("file list:\n");
+		do{
+			printf("%s\n", fileDir.name);
+
+		} while (_findnext(lfDir, &fileDir) == 0);
+	}
+	_findclose(lfDir);
+}
