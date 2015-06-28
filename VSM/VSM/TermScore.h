@@ -1,10 +1,13 @@
 #pragma once
 #include <iostream>
+#include <sstream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <cstdlib>
 #include <io.h>
+#include "tfidf.h"
 using namespace std;
 
 class TermScore
@@ -12,16 +15,16 @@ class TermScore
 	string query;
 	vector<string> term;
 	vector<string> fileName;
- 	int DocuNum;
-	double **df;
-	double **idf;
-	int **tf;
-	double **tf_idf;
-	double *Score;
+	int fileNum;
+	int termNum;
+	vector<tfidf> score;
 public:
-	TermScore(string input);
-	int split(const std::string &txt, std::vector<std::string> &strs, char ch);
-	void traverse(string direName);
+	TermScore::TermScore();
+	void ReadQuery(string input);
+	void ReadQuery(vector<string> &terms);
+	int split(const string &txt, vector<string> &strs, char ch);
+	void Traverse();
+	void Calculate();
 	~TermScore();
 };
 

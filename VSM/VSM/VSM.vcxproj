@@ -80,9 +80,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TermScore.cpp" />
+    <ClCompile Include="tfidf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TermScore.h" />
+    <ClInclude Include="tfidf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

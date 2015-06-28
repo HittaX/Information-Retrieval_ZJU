@@ -1,16 +1,26 @@
 #include "TermScore.h"
 
+TermScore::TermScore()
+{
+	Traverse();
+	fileNum = fileName.size();
+	score = vector<tfidf>(fileNum);
+}
 
-TermScore::TermScore(string input)
+void TermScore::ReadQuery(string input)
 {
 	query = input;
 	split(query, term, ' ');
-	for (auto &i : term)
-	{
-		cout << i << endl;
-	}
+	termNum = term.size();
+	Calculate();
 }
 
+void TermScore::ReadQuery(vector<string> &terms)
+{
+	term = terms;
+	termNum = term.size();
+	Calculate();
+}
 
 TermScore::~TermScore()
 {
@@ -35,20 +45,52 @@ int TermScore::split(const std::string &txt, std::vector<std::string> &strs, cha
 	return strs.size();
 }
 
-void TermScore::traverse(string direName)
+void TermScore::Traverse()
 {
 	_finddata_t fileDir;
-	char* dir = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\*.*";
+	char* dir = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\*.html";
 	long lfDir;
 
 	if ((lfDir = _findfirst(dir, &fileDir)) == -1l)
 		printf("No file is found\n");
 	else{
-		printf("file list:\n");
 		do{
-			printf("%s\n", fileDir.name);
-
+			fileName.push_back(fileDir.name);
 		} while (_findnext(lfDir, &fileDir) == 0);
 	}
 	_findclose(lfDir);
+}
+
+void TermScore::Calculate()
+{	
+	string line;
+	for (int i = 0; i < fileNum; i++)
+	{
+		vector<string> split_res;
+		string path = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\"+fileName.at(i);
+		fstream file(path);
+		if (!file.is_open())
+		{
+			throw exception("Error when opening file");
+		}
+		while (!file.eof())
+		{
+			string str;
+			getline(file, line);
+			istringstream stream(line);
+			while (stream >> str)
+			{
+				if (ispunct(str[str.size() - 1]))
+					str = str.substr(0, str.size() - 1);
+				split_res.push_back(str);
+				cout << str << endl;
+			}
+		}
+		score.at(i).N = split_res.size();
+		split_res.empty();
+		/*for (int j = 0; j < termNum; j++)
+		{
+			
+		}*/
+	}
 }

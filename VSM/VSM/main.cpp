@@ -1,19 +1,32 @@
 ﻿#include <iostream>
 #include <string>
+#include <sstream>
 #include "TermScore.h"
 
 using namespace std;
 
 int main()
 {
-	string line;
+	string line,str;
+	vector<string> terms;
 	TermScore *query;
-	do
+	try
 	{
-		getline(cin,line);
-		if (line == "_exit")
-			return 1;
-		query = new TermScore(line);
-	} while (1);
-	return 0;
+		query = new TermScore();
+		do
+		{
+			getline(cin, line);
+			istringstream stream(line);
+			if (line == "_exit")
+				return 1;
+			while (stream >> str)
+				terms.push_back(str);
+			query->ReadQuery(terms);
+		} while (1);
+		return 0;
+	}
+	catch (exception err)
+	{
+		cout << err.what() << endl;
+	}
 }
