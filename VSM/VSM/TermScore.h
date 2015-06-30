@@ -1,3 +1,4 @@
+﻿#define _CRT_SECURE_NO_WARNINGS
 #pragma once
 #include <iostream>
 #include <sstream>
@@ -12,13 +13,31 @@ using namespace std;
 
 class TermScore
 {
-	string query;
-	vector<string> term;
-	vector<string> fileName;
+	struct doc
+	{
+		int docID;
+		struct doc *next;
+	};//DocID链表 
+
+	struct token
+	{
+		char term[40];
+		int docFreq;
+		struct doc *first;
+	};
+
+	typedef struct doc doc;
+	typedef struct token token;
+
+	token *tok[50000];
+	int tokNum = 0, docNum = 0;
+	string query;	//查询的语句
+	vector<string> term;		//查询的关键词(由query分割得到)
+	vector<string> fileName;	//语料库的文件名称 xxx.html(不含路径)
 	int fileNum;
 	int termNum;
-	vector<tfidf> score;
-	vector<int> N;
+	vector<tfidf> score;		//VSM的得分
+	vector<int> N;				//每个文档词的个数
 public:
 	TermScore::TermScore();
 	void ReadQuery(string input);
@@ -26,6 +45,9 @@ public:
 	int split(const string &txt, vector<string> &strs, char ch);
 	void Traverse();
 	void Calculate();
+	int insert(string a,int fN_index);//输入一个文档，参数a为文件名 
+	int display(void);//打印倒排索引
+	void Index();
 	~TermScore();
 };
 

@@ -1,4 +1,4 @@
-#include "TermScore.h"
+﻿#include "TermScore.h"
 
 TermScore::TermScore()
 {
@@ -18,7 +18,8 @@ void TermScore::ReadQuery(vector<string> &terms)
 {
 	term = terms;
 	termNum = term.size();
-	Calculate();
+	Index();
+	//	Calculate();
 }
 
 TermScore::~TermScore()
@@ -106,4 +107,93 @@ void TermScore::Calculate()
 			cout << score.at(j).tf_idf.at(i) << endl;
 		}
 	}
+}
+
+int TermScore::insert(string a,int fN_index)//输入一个文档，参数a为文件名
+{
+	doc *newD, *nowD;
+	token *newT;
+	char str[40];//当前处理的词项 
+	int i, j, flag;
+	FILE *f1;
+	f1 = fopen(a.c_str(), "r");
+
+	while (!feof(f1))
+	{
+		string temp = fileName.at(fN_index);
+		temp = temp.substr(0, temp.size() - 5);
+		fscanf(f1, "%s", str);
+		newD = (doc*)malloc(sizeof(doc));
+		newD->docID = stoi(temp,nullptr,10);
+		//词项已存在，直接加链表里 
+		flag = 0;
+		for (i = 0; i<tokNum; i++)
+		{
+			if (strcmp(str, tok[i]->term) == 0)
+			{
+				if (tok[i]->docFreq>0)
+				{
+					nowD = tok[i]->first;
+					for (j = 1; j<tok[i]->docFreq; j++)
+					{
+						nowD = nowD->next;
+					}
+					nowD->next = newD;
+				}
+				else
+				{
+					tok[i]->first = newD;
+				}
+				flag = 1;
+				tok[i]->docFreq++;
+				break;
+			}
+		}
+
+		//词项不存在，建立新词项 
+		if (flag == 0)
+		{
+			newT = (token*)malloc(sizeof(token));
+			strcpy(newT->term, str);
+			newT->docFreq = 1;
+			newT->first = newD;
+			tok[tokNum] = newT;
+			tokNum++;
+		}
+	}
+	fclose(f1);
+	return 0;
+}
+
+
+int TermScore::display(void)//打印倒排索引
+{
+	int i, j;
+	doc *nowD;
+
+	//逐个打印词项 
+	for (i = 0; i<tokNum; i++)
+	{
+		printf("term:%s  ", tok[i]->term);
+		printf("docFreq:%d  ", tok[i]->docFreq);
+		printf("postings list: ");
+		nowD = tok[i]->first;
+		for (j = 1; j<tok[i]->docFreq; j++)
+		{
+			printf("%d ", nowD->docID);
+			nowD = nowD->next;
+		}
+		printf("%d\n", nowD->docID);
+	}
+	return 0;
+}
+
+void TermScore::Index()
+{
+	for (int i = 0; i < fileNum; i++)
+	{
+		string path = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\" + fileName.at(i);
+		insert(path.c_str(),i);
+	}
+	display();
 }
