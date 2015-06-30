@@ -4,7 +4,6 @@ TermScore::TermScore()
 {
 	Traverse();
 	fileNum = fileName.size();
-	score = vector<tfidf>(fileNum);
 }
 
 void TermScore::ReadQuery(string input)
@@ -64,6 +63,7 @@ void TermScore::Traverse()
 void TermScore::Calculate()
 {	
 	string line;
+	score.resize(termNum);
 	for (int i = 0; i < fileNum; i++)
 	{
 		vector<string> split_res;
@@ -83,14 +83,27 @@ void TermScore::Calculate()
 				if (ispunct(str[str.size() - 1]))
 					str = str.substr(0, str.size() - 1);
 				split_res.push_back(str);
-				cout << str << endl;
 			}
 		}
-		score.at(i).N = split_res.size();
-		split_res.empty();
-		/*for (int j = 0; j < termNum; j++)
+		N.push_back(split_res.size());
+		for (int j = 0; j < termNum; j++)
 		{
-			
-		}*/
+			int tfper = count(split_res.begin(), split_res.end(), term.at(j));
+			score.at(j).tf.push_back(tfper);
+			vector<string>::iterator it=find(split_res.begin(), split_res.end(), term.at(j));
+			if (it != split_res.end())
+			{
+				score.at(j).df++;
+			}
+		}
+		split_res.empty();
+	}
+	for (int j = 0; j < termNum; j++)
+	{
+		for (int i = 0; i < fileNum; i++)
+		{
+			score.at(j).tf_idf.push_back(tfidf::Calc_tfidf(score.at(j).tf.at(i), score.at(j).df, N.at(i)));
+			cout << score.at(j).tf_idf.at(i) << endl;
+		}
 	}
 }

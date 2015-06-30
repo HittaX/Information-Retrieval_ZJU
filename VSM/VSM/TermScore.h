@@ -18,6 +18,7 @@ class TermScore
 	int fileNum;
 	int termNum;
 	vector<tfidf> score;
+	vector<int> N;
 public:
 	TermScore::TermScore();
 	void ReadQuery(string input);
