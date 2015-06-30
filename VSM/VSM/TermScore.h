@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <cstdlib>
+#include <stdlib.h>
 #include <io.h>
 #include "tfidf.h"
 using namespace std;
@@ -17,7 +17,7 @@ class TermScore
 	{
 		int docID;
 		struct doc *next;
-	};//DocID链表 
+	};
 
 	struct token
 	{
@@ -30,12 +30,12 @@ class TermScore
 	typedef struct token token;
 
 	token *tok[50000];
-	int tokNum = 0, docNum = 0;
 	string query;	//查询的语句
 	vector<string> term;		//查询的关键词(由query分割得到)
 	vector<string> fileName;	//语料库的文件名称 xxx.html(不含路径)
 	int fileNum;
 	int termNum;
+	int tokNum=0;
 	vector<tfidf> score;		//VSM的得分
 	vector<int> N;				//每个文档词的个数
 public:

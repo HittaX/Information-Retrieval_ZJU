@@ -4,6 +4,7 @@ TermScore::TermScore()
 {
 	Traverse();
 	fileNum = fileName.size();
+	Index();
 }
 
 void TermScore::ReadQuery(string input)
@@ -18,8 +19,7 @@ void TermScore::ReadQuery(vector<string> &terms)
 {
 	term = terms;
 	termNum = term.size();
-	Index();
-	//	Calculate();
+	Calculate();
 }
 
 TermScore::~TermScore()
@@ -70,6 +70,8 @@ void TermScore::Calculate()
 		vector<string> split_res;
 		string path = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\"+fileName.at(i);
 		fstream file(path);
+		string temp = fileName.at(i);
+		temp = temp.substr(0, temp.size() - 5);
 		if (!file.is_open())
 		{
 			throw exception("Error when opening file");
@@ -81,6 +83,8 @@ void TermScore::Calculate()
 			istringstream stream(line);
 			while (stream >> str)
 			{
+				if (ispunct(str[0]))
+					str = str.substr(1, str.size());
 				if (ispunct(str[str.size() - 1]))
 					str = str.substr(0, str.size() - 1);
 				split_res.push_back(str);
@@ -98,6 +102,7 @@ void TermScore::Calculate()
 			}
 		}
 		split_res.empty();
+		file.close();
 	}
 	for (int j = 0; j < termNum; j++)
 	{
@@ -111,30 +116,42 @@ void TermScore::Calculate()
 
 int TermScore::insert(string a,int fN_index)//输入一个文档，参数a为文件名
 {
+	int  flag, id;
+	string line,temp;
 	doc *newD, *nowD;
 	token *newT;
-	char str[40];//当前处理的词项 
-	int i, j, flag;
-	FILE *f1;
-	f1 = fopen(a.c_str(), "r");
-
-	while (!feof(f1))
+	fstream file(a);
+	temp = fileName.at(fN_index);
+	temp = temp.substr(0, temp.size() - 5);
+	id = stoi(temp);
+	if (!file.is_open())
 	{
-		string temp = fileName.at(fN_index);
-		temp = temp.substr(0, temp.size() - 5);
-		fscanf(f1, "%s", str);
-		newD = (doc*)malloc(sizeof(doc));
-		newD->docID = stoi(temp,nullptr,10);
-		//词项已存在，直接加链表里 
-		flag = 0;
-		for (i = 0; i<tokNum; i++)
+		throw exception("Error when opening file");
+	}
+	while (!file.eof())
+	{
+		string str;
+		getline(file, line);
+		istringstream stream(line);
+		while (stream >> str)
 		{
-			if (strcmp(str, tok[i]->term) == 0)
+			if (ispunct(str[0]))
+				str = str.substr(1, str.size());
+			if (ispunct(str[str.size() - 1]))
+				str = str.substr(0, str.size() - 1);
+		}
+		newD = (doc*)malloc(sizeof(doc));
+		newD->docID = id;	//词项已存在，直接加链表里 
+		flag = 0;
+		for (int i = 0; i<tokNum; i++)
+		{
+			if (strcmp(str.c_str(), tok[i]->term) == 0)
 			{
 				if (tok[i]->docFreq>0)
 				{
+					nowD = new doc;
 					nowD = tok[i]->first;
-					for (j = 1; j<tok[i]->docFreq; j++)
+					for (int j = 1; j<tok[i]->docFreq; j++)
 					{
 						nowD = nowD->next;
 					}
@@ -153,15 +170,15 @@ int TermScore::insert(string a,int fN_index)//输入一个文档，参数a为文
 		//词项不存在，建立新词项 
 		if (flag == 0)
 		{
-			newT = (token*)malloc(sizeof(token));
-			strcpy(newT->term, str);
+			newT = new token;
+			strcpy(newT->term, str.c_str());
 			newT->docFreq = 1;
 			newT->first = newD;
 			tok[tokNum] = newT;
 			tokNum++;
 		}
 	}
-	fclose(f1);
+	file.close();
 	return 0;
 }
 
@@ -193,7 +210,7 @@ void TermScore::Index()
 	for (int i = 0; i < fileNum; i++)
 	{
 		string path = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\" + fileName.at(i);
-		insert(path.c_str(),i);
+		insert(path,i);
 	}
 	display();
 }
