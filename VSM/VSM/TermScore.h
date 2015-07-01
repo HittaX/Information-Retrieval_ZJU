@@ -42,10 +42,10 @@ class TermScore
 	int termNum;
 	int tokNum=0;
 	vector<tfidf> score;		//VSM的得分
+	vector<Pair> sc;
 	vector<int> N;				//每个文档词的个数
 public:
 	TermScore::TermScore();
-	void ReadQuery(string input);
 	void ReadQuery(vector<string> &terms);
 	int split(const string &txt, vector<string> &strs, char ch);
 	void Traverse();
@@ -54,6 +54,12 @@ public:
 	int display(void);			//打印倒排索引
 	double QueryVector();
 	void Index();
+	void boolsear();
+	int Query(char a[]);
+	int intersect(char a[], char b[]);
+	int merge(char a[], char b[]);
+	int complement(char a[], char b[]);
+	void Clear();
 	~TermScore();
 };
 

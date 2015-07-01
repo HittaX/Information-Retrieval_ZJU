@@ -22,6 +22,8 @@ int main()
 			while (stream >> str)
 				terms.push_back(str);
 			query->ReadQuery(terms);
+			query->Clear();
+			terms.clear();
 		} while (1);
 		return 0;
 	}
