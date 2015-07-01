@@ -18,8 +18,47 @@ void TermScore::ReadQuery(string input)
 void TermScore::ReadQuery(vector<string> &terms)
 {
 	term = terms;
+	//int i,j,l1,l2,x,y;
+	//int a[100][100];
+	//int min,mini,k;
+	//min=10000;
+ //   for (x=0;x<tokNum;x++)
+	//{
+	//   s1=term;
+	//   s2=tok[x]->term;
+	//   l1=s1.length();
+	//   l2=s2.length();
+ //    
+ //      i=0;
+ //      for (i=0;i<=l1;i++)
+	//      a[i][0]=i;
+	//   for (i=0;i<=l2;i++)
+	//      a[0][i]=i;
+	//   for (i=1;i<=l1;i++)
+	//	 for (j=1;j<=l2;j++)
+	//		if (s1[i-1]==s2[j-1])
+	//		{
+	//			a[i][j]=a[i-1][j]+1;
+	//			if (a[i][j]>a[i][j-1]+1) a[i][k]=a[i][j-1]+1;
+	//		    if (a[i][j]>a[i-1][j-1]) a[i][k]=a[i-1][j-1];
+	//		}
+	//		else
+	//		{
+	//			a[i][j]=a[i-1][j]+1;
+	//			if (a[i][j]>a[i][j-1]+1) a[i][k]=a[i][j-1]+1;
+	//		    if (a[i][j]>a[i-1][j-1]+1) a[i][k]=a[i-1][j-1]+1;
+	//		}
+	//   k=a[l1][l2];
+	//   if (k<min)
+	//   {
+	//	   min=k;
+	//	   mini=x;
+	//   }
+	//}
+	//term=tok[mini]->term;
 	termNum = term.size();
 	Calculate();
+	QueryVector();
 }
 
 TermScore::~TermScore()
@@ -48,10 +87,9 @@ int TermScore::split(const std::string &txt, std::vector<std::string> &strs, cha
 void TermScore::Traverse()
 {
 	_finddata_t fileDir;
-	char* dir = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\*.html";
 	long lfDir;
-
-	if ((lfDir = _findfirst(dir, &fileDir)) == -1l)
+	string path = routes + "*.html";
+	if ((lfDir = _findfirst(path.c_str(), &fileDir)) == -1l)
 		printf("No file is found\n");
 	else{
 		do{
@@ -68,7 +106,7 @@ void TermScore::Calculate()
 	for (int i = 0; i < fileNum; i++)
 	{
 		vector<string> split_res;
-		string path = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\"+fileName.at(i);
+		string path = routes+fileName.at(i);
 		fstream file(path);
 		string temp = fileName.at(i);
 		temp = temp.substr(0, temp.size() - 5);
@@ -109,7 +147,6 @@ void TermScore::Calculate()
 		for (int i = 0; i < fileNum; i++)
 		{
 			score.at(j).tf_idf.push_back(tfidf::Calc_tfidf(score.at(j).tf.at(i), score.at(j).df, N.at(i)));
-			cout << score.at(j).tf_idf.at(i) << endl;
 		}
 	}
 }
@@ -207,10 +244,32 @@ int TermScore::display(void)//打印倒排索引
 
 void TermScore::Index()
 {
+	cout << "Start calculating index:" << endl;
 	for (int i = 0; i < fileNum; i++)
 	{
-		string path = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\" + fileName.at(i);
+		string path = routes + fileName.at(i);
 		insert(path,i);
 	}
-	display();
+	cout << "Index has been calculated." << endl;
+	//display();
+}
+
+double TermScore::QueryVector()
+{
+	double temp;
+	vector<Pair> sc;
+	for (int i = 0; i < fileNum; i++)
+	{
+		temp = 0;
+		for (int  j = 0; j < termNum; j++)
+		{
+			temp += score.at(j).tf_idf.at(i);
+		}
+		sc.push_back(Pair(temp,i));
+	}
+	sort(sc.begin(), sc.end(),greater<Pair>());
+	for (int i = 0; i < 30; i++)
+	{
+		cout << "Rank:" << i + 1 << setw(10) << "tf_idf:" << sc[i].tf_idf <<setw(10) << "docID:" << sc[i].id << endl;
+	}
 }

@@ -1,6 +1,7 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #pragma once
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -8,7 +9,10 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <io.h>
+#include <functional>
 #include "tfidf.h"
+#include "pair.h"
+
 using namespace std;
 
 class TermScore
@@ -30,7 +34,8 @@ class TermScore
 	typedef struct token token;
 
 	token *tok[50000];
-	string query;	//查询的语句
+	const string routes = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\";
+	string query;				//查询的语句
 	vector<string> term;		//查询的关键词(由query分割得到)
 	vector<string> fileName;	//语料库的文件名称 xxx.html(不含路径)
 	int fileNum;
@@ -46,7 +51,8 @@ public:
 	void Traverse();
 	void Calculate();
 	int insert(string a,int fN_index);//输入一个文档，参数a为文件名 
-	int display(void);//打印倒排索引
+	int display(void);			//打印倒排索引
+	double QueryVector();
 	void Index();
 	~TermScore();
 };

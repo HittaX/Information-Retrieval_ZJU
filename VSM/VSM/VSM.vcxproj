@@ -79,10 +79,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pair.cpp" />
     <ClCompile Include="TermScore.cpp" />
     <ClCompile Include="tfidf.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="pair.h" />
     <ClInclude Include="TermScore.h" />
     <ClInclude Include="tfidf.h" />
   </ItemGroup>

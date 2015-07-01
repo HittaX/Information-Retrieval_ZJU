@@ -24,12 +24,18 @@
     <ClCompile Include="tfidf.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="pair.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TermScore.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="tfidf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pair.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
