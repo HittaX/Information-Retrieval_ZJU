@@ -198,9 +198,7 @@ int TermScore::insert(string a,int fN_index)//输入一个文档，参数a为文
 				break;
 			}
 		}
-
-		//词项不存在，建立新词项 
-		if (flag == 0)
+		if (flag == 0)    //词项不存在，建立新词项 
 		{
 			newT = new token;
 			strcpy(newT->term, str.c_str());
@@ -264,6 +262,8 @@ double TermScore::QueryVector()
 	sort(sc.begin(), sc.end(),greater<Pair>());
 	for (int i = 0; i < 30; i++)
 	{
+		if (sc[i].tf_idf == 0)
+			break;
 		cout << "Rank:" << i + 1 << setw(10) << "tf_idf:" << sc[i].tf_idf <<setw(10) << "docID:" << sc[i].id << endl;
 	}
 }
@@ -318,6 +318,11 @@ int TermScore::intersect(char a[], char b[])//����������ͬʱ
 	int i, j, flag;
 
 	printf("Result: ");
+	nowD1 = new doc;
+	nowD2 = new doc;
+	nowT1 = new token;
+	nowT2 = new token;
+
 
 	//���ҵ�һ������ 
 	flag = 0;
@@ -407,6 +412,11 @@ int TermScore::merge(char a[], char b[])//�������������
 	token *nowT1, *nowT2;
 	int i, j, flag;
 
+	nowD1 = new doc;
+	nowD2 = new doc;
+	nowT1 = new token;
+	nowT2 = new token;
+
 	printf("Result: ");
 
 	//���ҵ�һ������ 
@@ -460,7 +470,7 @@ int TermScore::merge(char a[], char b[])//�������������
 	j = 0;
 	nowD1 = nowT1->first;
 	nowD2 = nowT2->first;
-	while ((i<nowT1->docFreq) || (j<nowT2->docFreq))
+	while ((i<nowT1->docFreq) && (j<nowT2->docFreq))
 	{
 		if (nowD1->docID == nowD2->docID)
 		{
@@ -486,7 +496,18 @@ int TermScore::merge(char a[], char b[])//�������������
 			continue;
 		}
 	}
-
+	while ((i < nowT1->docFreq))
+	{
+		printf("%d ", nowD1->docID);
+		nowD1 = nowD1->next;
+		i++;
+	}
+	while (j < nowT2->docFreq)
+	{
+		printf("%d ", nowD2->docID);
+		nowD2 = nowD2->next;
+		j++;
+	}
 	printf("\n");
 	return 0;
 }
@@ -498,6 +519,11 @@ int TermScore::complement(char a[], char b[])//�����������
 	int i, j, flag;
 
 	printf("Result: ");
+
+	nowD1 = new doc;
+	nowD2 = new doc;
+	nowT1 = new token;
+	nowT2 = new token;
 
 	//���ҵ�һ������ 
 	flag = 0;
@@ -550,6 +576,8 @@ int TermScore::complement(char a[], char b[])//�����������
 	nowD2 = nowT2->first;
 	while (i<nowT1->docFreq)
 	{
+		if (j >= nowT2->docFreq)
+			break;
 		if (nowD1->docID == nowD2->docID)
 		{
 			nowD1 = nowD1->next;
@@ -564,6 +592,7 @@ int TermScore::complement(char a[], char b[])//�����������
 			j++;
 			continue;
 		}
+	
 		if ((j >= nowT2->docFreq) || (nowD1->docID < nowD2->docID))
 		{
 			printf("%d ", nowD1->docID);
@@ -572,7 +601,13 @@ int TermScore::complement(char a[], char b[])//�����������
 			continue;
 		}
 	}
-
+	while (i < nowT1->docFreq)
+	{
+		printf("%d ", nowD1->docID);
+		nowD1 = nowD1->next;
+		i++;
+		continue;
+	}
 	printf("\n");
 	return 0;
 }
@@ -581,22 +616,18 @@ void TermScore::boolsear()
 {
 	doc *newD, *nowD;
 	token *nowT1, *nowT2;
-	char s[1000], b[1000];
-	char allwords[1000][1000];
+	char  b[1000];
+	string s;
 	token *newT;
 	char tt, c;
 	int i, j, k, length, n, l;
-	c = getchar();
-	length = 0;
-	while (c != '\n')
-	{
-		s[length] = c;
-		c = getchar();
-		length++;
-	}
+
+	getline(cin, s);
+
 	n = 1;
 	l = 0;
-	for (i = 0; i<length; i++)
+
+	for (i = 0; i<s.length(); i++)
 	{
 		if (s[i] == ' ')
 		{
@@ -606,44 +637,32 @@ void TermScore::boolsear()
 		else
 		{
 			allwords[n][l] = s[i];
+
 			l++;
 		}
 	}
 	n++;
-
 	for (i = 2; i <= n; i++)
 	{
-		if (allwords[i] == "AND")
+		if ((allwords[i][0] == 'A') && (allwords[i][1] == 'N') && (allwords[i][2] == 'D') && (allwords[i][3] != 'N'))
 		{
+
 			intersect(allwords[1], allwords[i + 1]);
+			break;
 		}
-		if (allwords[i] == "OR")
+		if (allwords[i][0] == 'O' && allwords[i][1] == 'R')
 		{
 			merge(allwords[1], allwords[i + 1]);
+			break;
 		}
-		if (allwords[i] == "ANDNOT")
+		if ((allwords[i][0] == 'A') && (allwords[i][1] == 'N') && (allwords[i][2] == 'D') && (allwords[i][3] == 'N'))
 		{
 			complement(allwords[1], allwords[i + 1]);
+			break;
 		}
 		i++;
 	}
-	for (i = 0; i<tokNum; i++)
-	{
-		if (strcmp(allwords[1], tok[i]->term) == 0)
-		{
-			break;
-		}
-	}
-	printf("postings list: ");
-	nowD = tok[i]->first;
-	for (j = 1; j<tok[i]->docFreq; j++)
-	{
-		printf("%d ", nowD->docID);
-		nowD = nowD->next;
-	}
-	printf("%d\n", nowD->docID);
 }
-
 void TermScore::Clear()
 {
 	query.clear();

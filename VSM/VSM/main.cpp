@@ -20,7 +20,14 @@ int main()
 			if (line == "_exit")
 				return 1;
 			while (stream >> str)
+			{
+				if (str == "_bool")
+				{
+					query->boolsear();
+					break;
+				}
 				terms.push_back(str);
+			}
 			query->ReadQuery(terms);
 			query->Clear();
 			terms.clear();

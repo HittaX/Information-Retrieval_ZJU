@@ -34,6 +34,7 @@ class TermScore
 	typedef struct token token;
 
 	token *tok[50000];
+	char allwords[1000][1000];
 	const string routes = "C:\\Users\\Song\\Information-Retrieval_ZJU\\VSM\\Reuters\\";
 	string query;				//查询的语句
 	vector<string> term;		//查询的关键词(由query分割得到)
